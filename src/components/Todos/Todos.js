@@ -1,14 +1,12 @@
 import "./Todos.scss";
 import {
   Button,
-  Checkbox,
-  FormControl,
-  InputLabel, MenuItem, Select,
+  Checkbox, FormControlLabel,
   TextField,
 } from "@material-ui/core";
-import { Delete, Edit } from "@material-ui/icons";
 import { useEffect, useState } from "react";
-import { STATUSES } from "../../constants";
+import IOSSwitch from "../IOSSwitch/IOSSwitch";
+import TodoItem from "../TodoItem/TodoItem";
 
 const Todos = () => {
   const [todos, setTodos] = useState(JSON.parse(localStorage.getItem('todos')) || []);
@@ -23,7 +21,6 @@ const Todos = () => {
     const newTodoItem = {
       id: Date.now(),
       text: newTodo,
-      // done: false,
       status: 'new',
     }
 
@@ -32,127 +29,58 @@ const Todos = () => {
 
   };
 
-  const editTodo = id => {
-
-  }
-
-  function statusHandler (id) {
-    const newTodos = todos.map(todo => {
-      if (todo.id === id) {
-        if (todo.status !== 'done') {
-          return {...todo, status: 'done'}
-        }
-        return {...todo, status: 'new'}
-      }
-      return todo
-    })
-
-    setTodos(newTodos)
-  }
-
-  function changeStatus (e, id) {
-    const newTodos = todos.map(todo => {
-      if (todo.id === id) {
-        return {...todo, status: e.target.value}
-      }
-      return todo
-    })
-
-    setTodos(newTodos)
-  }
-
-  function deleteTodo (id) {
-    setTodos(todos.filter(todo => todo.id !== id))
-  }
-
   function saveTodos () {
     localStorage.setItem('todos', JSON.stringify(todos))
   }
 
-  useEffect(()=>{
-    console.log('useEffect')
-
-    return ()=>{
-      // ...
-    }
-  },[todos])
+  useEffect(() => {
+    saveTodos()
+  }, [todos])
 
   return (
-    <div className="todos">
-      <form className="todos__form"
-            onSubmit={addTodo}>
-        <TextField label="Your new todo..."
-                   type="text"
-                   size="small"
-                   name="todo"
-                   value={newTodo}
-                   onChange={inputChange}
-                   variant="outlined" />
-        <Button variant="contained"
-                type="submit"
-                color="primary">Add todo!!!</Button>
-      </form>
-      {todos.length ? <Button variant="outlined"
-                              color="primary"
-                              className="todos__save"
-                              onClick={saveTodos}>Save todos</Button> : null}
+      <div className="todos">
+        <form className="todos__form"
+              onSubmit={addTodo}>
+          <TextField label="Your new todo..."
+                     type="text"
+                     size="small"
+                     name="todo"
+                     value={newTodo}
+                     onChange={inputChange}
+                     variant="outlined" />
+          <Button variant="contained"
+                  type="submit"
+                  color="primary">Add todo!!!</Button>
+        </form>
+        {todos.length ? <Button variant="outlined"
+                                color="primary"
+                                className="todos__save"
+                                onClick={saveTodos}>Save todos</Button> : null}
 
-      <div className="todos__autosave">
-        <Checkbox
-          color="default"
-          checked={true}
-          onChange={() => statusHandler()}
-        />
-        Autosave
+        <div className="todos__autosave">
+          <FormControlLabel
+              control={<IOSSwitch checked={true}
+                                  onChange={() => {}} />}
+              label="iOS style"
+          />
+
+          <Checkbox
+              color="default"
+              checked={true}
+              onChange={() => {}}
+          />
+          Autosave
+        </div>
+
+        <div className="todos__list">
+          {todos.length
+              ? (todos.map((todo) => <TodoItem key={todo.id}
+                                               todo={todo}
+                                               todos={todos}
+                                               setTodos={setTodos} />))
+              : <h2>No todos...</h2>}
+        </div>
       </div>
-
-      <div className="todos__list">
-        {todos.length
-          ? (todos.map(({id, text, status}) => {
-            return (
-              <div className="todos__item"
-                   key={id}>
-                <Checkbox
-                  color="default"
-                  checked={status === 'done'}
-                  onChange={() => statusHandler(id)}
-                />
-                <p className="todos__text">{text}</p>
-                {/*{true ? (<TextField value={text}/>) : <p className="todos__text">{text}</p>}*/}
-                <div className="todos__actions">
-                  <FormControl className="todos__select">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={function (e) {
-                        return changeStatus(e, id)
-                      }}
-                    >
-                      {STATUSES.map((status) => (
-                        <MenuItem value={status}
-                                  key={status}>{status}</MenuItem>
-                      ))}
-
-                    </Select>
-                  </FormControl>
-                  <Button startIcon={<Edit />}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={() => editTodo(id)}>Edit</Button>
-                  <Button startIcon={<Delete />}
-                          variant="contained"
-                          color="secondary"
-                          size="small"
-                          onClick={() => deleteTodo(id)}>Delete</Button>
-
-                </div>
-              </div>
-            );
-          }))
-          : <h2>No todos...</h2>}
-      </div>
-    </div>
   );
 };
 

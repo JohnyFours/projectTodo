@@ -32,9 +32,9 @@ const theme = createMuiTheme({
 
 const App = () => {
   return (
-      <MuiThemeProvider theme={theme}>
-        <Todos />
-      </MuiThemeProvider>
+    <MuiThemeProvider theme={theme}>
+      <Todos />
+    </MuiThemeProvider>
   );
 };
 

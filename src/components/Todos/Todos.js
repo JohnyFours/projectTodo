@@ -1,8 +1,10 @@
 import "./Todos.scss";
-import { Button, Checkbox, FormControlLabel, TextField } from "@material-ui/core";
+import { Button, FormControlLabel, TextField } from "@material-ui/core";
 import { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router";
 import { STATUSES } from "../../constants";
 import Logger from "../../utils/Logger";
+import { queryStringToObject } from "../../utils/queryStringHelpers";
 import IOSSwitch from "../IOSSwitch/IOSSwitch";
 import TodoItem from "../TodoItem/TodoItem";
 
@@ -41,21 +43,33 @@ const Todos = () => {
     }
   }, [todos]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [currentStatus, setCurrentStatus] = useState("new");
+  // const [currentStatus, setCurrentStatus] = useState("new");
+
+  // const currentStatus = 22;
+  // setCurrentStatus((prevCurrentStatus) => prevCurrentStatus * 2);
+
+  const { push } = useHistory();
+
+  Logger.info("push", push);
 
   function tabHandler(status) {
-    setCurrentStatus(status);
-    // про синхронность setState
-    // Logger.info("tabHandler", currentStatus);
+    push({
+      search: `status=${status}`,
+    });
   }
 
   useEffect(() => {
-    // Logger.info("useEffect", currentStatus);
-  }, [currentStatus]);
+    push({
+      search: "status=new",
+    });
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("switchTodo", switchTodo);
   }, [switchTodo]);
+
+  const location = useLocation();
+  Logger.info("location", queryStringToObject(location.search).status);
 
   return (
     <div className="todos">
@@ -90,7 +104,7 @@ const Todos = () => {
         {STATUSES.map((status) => (
           <Button
             key={status}
-            variant={status === currentStatus ? "contained" : "outlined"}
+            variant={status === queryStringToObject(location.search).status ? "contained" : "outlined"}
             color="primary"
             onClick={() => tabHandler(status)}
           >
@@ -102,7 +116,7 @@ const Todos = () => {
       <div className="todos__list">
         {todos.length ? (
           todos
-            .filter((todo) => todo.status === currentStatus)
+            .filter((todo) => todo.status === queryStringToObject(location.search).status)
             .map((todo) => <TodoItem key={todo.id} todo={todo} todos={todos} setTodos={setTodos} />)
         ) : (
           <h2>No todos...</h2>

@@ -1,5 +1,6 @@
 import { Button, Checkbox, FormControl, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { Delete, Edit } from "@material-ui/icons";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { STATUSES } from "../../constants";
 import DialogDelete from "../DialogDelete/DialogDelete";
@@ -7,6 +8,7 @@ import DialogDelete from "../DialogDelete/DialogDelete";
 const TodoItem = ({ todo, todos, setTodos }) => {
   const [isEditorActive, setIsEditorActive] = useState(false);
   const [editingText, setEditingText] = useState("");
+
   function helper(id, key, value) {
     const newTodos = todos.map((todo) => {
       if (todo.id === id) {
@@ -30,6 +32,7 @@ const TodoItem = ({ todo, todos, setTodos }) => {
   function statusHandler(id) {
     helper(id, "status", todo.status !== "done" ? "done" : "new");
   }
+
   function changeStatus(e, id) {
     helper(id, "status", e.target.value);
   }
@@ -62,11 +65,11 @@ const TodoItem = ({ todo, todos, setTodos }) => {
             value={editingText}
           />
         ) : (
-          <p className="todos__text">{todo.text}</p>
+          <p className="todos__text">{todo.text}!</p>
         )}
         <div className="todos__actions">
           <FormControl className="todos__select">
-            <InputLabel>Status</InputLabel>
+            <InputLabel>Status.</InputLabel>
             <Select
               value={todo.status}
               onChange={function (e) {
@@ -108,6 +111,18 @@ const TodoItem = ({ todo, todos, setTodos }) => {
       />
     </>
   );
+};
+
+TodoItem.propTypes = {
+  todo: PropTypes.object.isRequired,
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      text: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  setTodos: PropTypes.func.isRequired,
 };
 
 export default TodoItem;

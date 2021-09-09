@@ -4,7 +4,7 @@
     "react/prop-types": 0,
     "react/display-name": 1,
     "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "double"],
+    "quotes": ["warn", "double"],
     "semi": ["error", "always"],
     "no-console": 2,
     "comma-dangle": [2, "always-multiline"],

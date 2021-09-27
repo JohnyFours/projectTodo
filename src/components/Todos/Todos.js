@@ -53,10 +53,17 @@ const Todos = () => {
   Logger.info("push", push);
 
   function tabHandler(status) {
+    // setCurrentStatus(status);
     push({
       search: `status=${status}`,
     });
+    // про синхронность setState
+    // Logger.info("tabHandler", currentStatus);
   }
+
+  // useEffect(() => {
+  //   // Logger.info("useEffect", currentStatus);
+  // }, [currentStatus]);
 
   useEffect(() => {
     push({

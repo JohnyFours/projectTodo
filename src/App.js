@@ -3,9 +3,8 @@ import { lightGreen, pink } from "@material-ui/core/colors";
 import { BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import Header from "./components/Header/Header";
 import { ROUTES } from "./constants";
-// import LoginLayout from "./layouts/LoginLayout/LoginLayout";
-// import MainLayout from "./layouts/MainLayout/MainLayout";
-import { lazy } from "react";
+import { lazy, useEffect, useState } from "react";
+import StoreContext from "./StoreContext";
 import { OpenRoute, PrivateRoute } from "./utils/Routes";
 
 const theme = createMuiTheme({
@@ -42,24 +41,34 @@ const MainLayout = lazy(() => import(/* webpackChunkName: "MainLayout" */ "./lay
 const LoginLayout = lazy(() => import(/* webpackChunkName: "LoginLayout" */ "./layouts/LoginLayout/LoginLayout"));
 
 const App = () => {
+  const [isAuth, setIsAuth] = useState(false);
+  const [username, setUsername] = useState("");
+  const [registeredUsers, setRegisteredUsers] = useState(JSON.parse(localStorage.getItem("users")) || []);
+
+  useEffect(() => {
+    localStorage.setItem("users", JSON.stringify(registeredUsers));
+  }, [registeredUsers]);
+
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
-        <Header />
-
-        {/*работает как обычный switch-case, перебирая роуты*/}
-        <Switch>
-          <PrivateRoute exact path={ROUTES.todos} component={MainLayout} auth={true} />
-          <OpenRoute exact path={ROUTES.home} component={LoginLayout} />
-          <Redirect to={ROUTES.home} />
-          {/*<Route exact path={ROUTES.todos}>*/}
-          {/*  <MainLayout />*/}
-          {/*</Route>*/}
-
-          {/*<Route path={ROUTES.home}>*/}
-          {/*  <LoginLayout />*/}
-          {/*</Route>*/}
-        </Switch>
+        <StoreContext.Provider
+          value={{
+            isAuth,
+            setIsAuth,
+            username,
+            setUsername,
+            registeredUsers,
+            setRegisteredUsers,
+          }}
+        >
+          <Header />
+          <Switch>
+            <OpenRoute exact path={ROUTES.home} component={LoginLayout} />
+            <PrivateRoute exact path={ROUTES.todos} component={MainLayout} auth={isAuth} />
+            <Redirect to={ROUTES.home} />
+          </Switch>
+        </StoreContext.Provider>
       </Router>
     </MuiThemeProvider>
   );

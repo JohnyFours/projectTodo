@@ -1,25 +1,10 @@
-import { Button } from "@material-ui/core";
-import React, { useContext } from "react";
-import { useHistory } from "react-router";
+import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/img/logo.svg";
 import "./Header.scss";
 import { ROUTES } from "../../constants";
-import StoreContext from "../../StoreContext";
 
 const Header = () => {
-  const { username, setUsername, isAuth, setIsAuth } = useContext(StoreContext);
-  const { push } = useHistory();
-
-  function logout() {
-    if (isAuth) {
-      localStorage.removeItem("auth");
-      setIsAuth(false);
-      setUsername("");
-      push(ROUTES.home);
-    }
-  }
-
   return (
     <div className="header">
       <div className="container">
@@ -35,11 +20,10 @@ const Header = () => {
             <NavLink exact to={ROUTES.todos}>
               Todos
             </NavLink>
+            <NavLink exact to={ROUTES.users}>
+              Users
+            </NavLink>
           </nav>
-
-          {username ? username : null}
-
-          <Button onClick={logout}>{isAuth ? "Logout" : "Login"}</Button>
         </div>
       </div>
     </div>
